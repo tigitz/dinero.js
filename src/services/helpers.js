@@ -7,7 +7,25 @@
  * @return {Boolean}
  */
 export function isNumeric(value) {
-  return !isNaN(parseInt(value)) && isFinite(value)
+  let type
+
+  if (value == null) {
+    type = value + ''
+  } else {
+    // Support: Android <=2.3 only (functionish RegExp)
+    type =
+      typeof value === 'object' || typeof value === 'function'
+        ? {}[toString.call(value)] || 'object'
+        : typeof value
+  }
+
+  return (
+    (type === 'number' || type === 'string') &&
+    // parseFloat NaNs numeric-cast false positives ("")
+    // ...but misinterprets leading-number strings, particularly hex literals ("0x...")
+    // subtraction forces infinities to NaN
+    !isNaN(value - parseFloat(value))
+  )
 }
 
 /**
